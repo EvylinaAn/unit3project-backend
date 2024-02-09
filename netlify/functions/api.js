@@ -7,15 +7,14 @@ import passport from "../../passport.js";
 import session from "express-session";
 import { User } from "../../schema/userSchema.js";
 import { ToDo } from "../../schema/ToDosSchema.js";
-import { Schedule } from '../../schema/scheduleSchema.js'
+import { Schedule } from "../../schema/scheduleSchema.js";
 import { Dailies } from "../../schema/DailiesSchema.js";
 import authRoute from "../../routes/auth.js";
-import serverless from "serverless-http"
+import serverless from "serverless-http";
 
 const client = new OAuth2Client();
 
 const api = express();
-const SECRET = process.env.SECRET;
 
 api.use(bodyParser.json());
 
@@ -33,7 +32,7 @@ api.use(passport.session());
 
 api.use(
   cors({
-    origin: "https://journee-frontend.netlify.app",
+    origin: "https://earnest-daifuku-4f3400.netlify.app",
     methods: "GET,POST,PUT,DELETE",
     credentials: true,
   })
@@ -41,7 +40,7 @@ api.use(
 
 api.use("/auth/", authRoute);
 
-const router = Router()
+const router = Router();
 
 router.get("/user/login", async (req, res) => {
   const user = await User.find({});
@@ -102,7 +101,7 @@ router.post("/todos/add", async (req, res) => {
         todo: todo.todo,
         completed: todo.completed,
         userId: user._id,
-        date: todo.date 
+        date: todo.date,
       });
       await newTodo.save();
       console.log(newTodo);
@@ -133,10 +132,10 @@ router.put("/todos/:id", async (req, res) => {
     console.log(todo.completed);
     await ToDo.updateOne(
       { _id: req.params.id },
-      { 
-        todo: todo.todo, 
-        completed: todo.completed, 
-        data: todo.date 
+      {
+        todo: todo.todo,
+        completed: todo.completed,
+        data: todo.date,
       }
     );
     res.sendStatus(200);
@@ -169,10 +168,9 @@ router.post("/dailies/add", async (req, res) => {
   }
 });
 
-
-router.get('/dailies', async (req, res) => {
+router.get("/dailies", async (req, res) => {
   try {
-    const userEmail = req.header("user-email")
+    const userEmail = req.header("user-email");
     // const entries = await Dailies.find({ userId }).sort({ createdAt: 'desc' })
     const user = await User.findOne({ email: userEmail });
     if (user) {
@@ -181,44 +179,43 @@ router.get('/dailies', async (req, res) => {
     } else {
       console.log("Not found");
       res.status(500).json({ message: "User not found" });
-
     }
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
-})
+});
 
-router.delete('/dailies/:id', async(req, res) => {
+router.delete("/dailies/:id", async (req, res) => {
   try {
-    await Dailies.deleteOne({_id: req.params.id})
+    await Dailies.deleteOne({ _id: req.params.id });
     console.log("<------------daily deleted----------");
     res.sendStatus(200);
   } catch (e) {
     console.error(e);
     res.status(500).json({ message: "Internal server error" });
   }
-})
+});
 
-router.put("/dailies/:id" , async(req, res) => {
+router.put("/dailies/:id", async (req, res) => {
   try {
-    const daily = req.body
+    const daily = req.body;
     await Dailies.updateOne(
       { _id: req.params.id },
       {
         water: daily.water,
         mood: daily.mood,
         sleep: daily.sleep,
-        quote: daily.quote
+        quote: daily.quote,
       }
-    )
-    res.sendStatus(200)
+    );
+    res.sendStatus(200);
     console.log("<-----------updated daily------------->");
   } catch (e) {
     console.error(e);
     res.status(500).json({ message: "Internal server error" });
   }
-})
+});
 
 router.get("/schedules", async (req, res) => {
   try {
@@ -246,7 +243,7 @@ router.post("/schedules/add", async (req, res) => {
       const newSchedule = new Schedule({
         date: schedule.date,
         time: schedule.time,
-        event: schedule.event, 
+        event: schedule.event,
         userId: user._id,
       });
       await newSchedule.save();
@@ -262,26 +259,26 @@ router.post("/schedules/add", async (req, res) => {
   }
 });
 
-router.delete('/schedules/:id', async(req, res) => {
+router.delete("/schedules/:id", async (req, res) => {
   try {
-    await Schedule.deleteOne({_id: req.params.id})
+    await Schedule.deleteOne({ _id: req.params.id });
     console.log("<------------schedule deleted----------");
     res.sendStatus(200);
   } catch (e) {
     console.error(e);
     res.status(500).json({ message: "Internal server error" });
   }
-})
+});
 
 router.put("/schedules/:id", async (req, res) => {
   try {
     const schedule = req.body;
     await Schedule.updateOne(
       { _id: req.params.id },
-      { 
-        date: schedule.date, 
-        time: schedule.time, 
-        event: schedule.event 
+      {
+        date: schedule.date,
+        time: schedule.time,
+        event: schedule.event,
       }
     );
     res.sendStatus(200);
@@ -292,6 +289,6 @@ router.put("/schedules/:id", async (req, res) => {
   }
 });
 
-api.use("/api/", router)
+api.use("/api/", router);
 
-export const handler = serverless(api)
+export const handler = serverless(api);
