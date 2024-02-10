@@ -38,7 +38,7 @@ api.use(
   })
 );
 
-api.use("/auth/", authRoute);
+api.use("/auth", authRoute);
 
 const router = Router();
 
